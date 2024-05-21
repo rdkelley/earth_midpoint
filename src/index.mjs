@@ -2,6 +2,8 @@ const EARTH_RADIUS = 6371;
 
 const convertDegreesToRadians = (deg) => (deg * Math.PI) / 180;
 
+const convertRadiansToDegrees = (rad) => rad * (180 / Math.PI);
+
 const parseArgs = () => {
   const args = process.argv.slice(2);
   const values = {};
@@ -46,19 +48,40 @@ const parseArgs = () => {
   return values;
 };
 
+const coordsToLatLong = (coords) => {
+  return [
+    Math.atan2(coords[2], Math.sqrt(coords[0] ** 2 + coords[1] ** 2)),
+    Math.atan2(coords[1], coords[0]),
+  ];
+};
+
+// Spherical interpolation
+const calculateIntermediatePoint = (f, coords, central_angle) => {
+  const a = Math.sin((1 - f) * central_angle) / Math.sin(central_angle);
+  const b = Math.sin(f * central_angle) / Math.sin(central_angle);
+
+  const x =
+    a * Math.cos(coords.latitude_a) * Math.cos(coords.longitude_a) +
+    b * Math.cos(coords.latitude_b) * Math.cos(coords.longitude_b);
+
+  const y =
+    a * Math.cos(coords.latitude_a) * Math.sin(coords.longitude_a) +
+    b * Math.cos(coords.latitude_b) * Math.sin(coords.longitude_b);
+
+  const z = a * Math.sin(coords.latitude_a) + b * Math.sin(coords.latitude_b);
+
+  return [x, y, z];
+};
+
 const calculateCentralAngle = (coords) => {
   console.log(coords);
   const long_diff = coords.longitude_b - coords.longitude_a;
-
-  console.log(long_diff);
 
   const acos_paren =
     Math.sin(coords.latitude_a) * Math.sin(coords.latitude_b) +
     Math.cos(coords.latitude_a) *
       Math.cos(coords.latitude_b) *
       Math.cos(long_diff);
-
-  console.log('acos_paren', acos_paren);
 
   return Math.acos(acos_paren);
 };
@@ -78,3 +101,19 @@ const central_angle = calculateCentralAngle(radian_location_values);
 console.log('CENTRAL ANGLE', central_angle);
 
 console.log('DISTANCE', EARTH_RADIUS * central_angle);
+
+const midpoint_coords = calculateIntermediatePoint(
+  0.5,
+  radian_location_values,
+  central_angle
+);
+
+console.log('midpoint_coords', midpoint_coords);
+
+const midpoint_rads = coordsToLatLong(midpoint_coords);
+
+console.log(
+  '\x1b[35m%s\x1b[0m',
+  midpoint_rads.map((point) => convertRadiansToDegrees(point))
+);
+
