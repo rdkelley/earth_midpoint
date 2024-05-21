@@ -1,6 +1,8 @@
+const EARTH_RADIUS = 6371;
+
 const convertDegreesToRadians = (deg) => (deg * Math.PI) / 180;
 
-const formatArgs = () => {
+const parseArgs = () => {
   const args = process.argv.slice(2);
   const values = {};
 
@@ -44,7 +46,24 @@ const formatArgs = () => {
   return values;
 };
 
-const arg_values = formatArgs();
+const calculateCentralAngle = (coords) => {
+  console.log(coords);
+  const long_diff = coords.longitude_b - coords.longitude_a;
+
+  console.log(long_diff);
+
+  const acos_paren =
+    Math.sin(coords.latitude_a) * Math.sin(coords.latitude_b) +
+    Math.cos(coords.latitude_a) *
+      Math.cos(coords.latitude_b) *
+      Math.cos(long_diff);
+
+  console.log('acos_paren', acos_paren);
+
+  return Math.acos(acos_paren);
+};
+
+const arg_values = parseArgs();
 const { n, ...location_values } = arg_values;
 
 // Convert the values of location_values to radians
@@ -54,16 +73,8 @@ Object.entries(location_values).forEach(([key, val]) => {
   radian_location_values[key] = convertDegreesToRadians(val);
 });
 
-console.log(radian_location_values);
+const central_angle = calculateCentralAngle(radian_location_values);
 
-const longitude_diff =
-  radian_location_values.longitude_b - radian_location_values.longitude_a;
+console.log('CENTRAL ANGLE', central_angle);
 
-// Intermediate values
-const b_x =
-  Math.cos(radian_location_values.latitude_b) * Math.cos(longitude_diff);
-const b_y =
-  Math.cos(radian_location_values.latitude_b) * Math.sin(longitude_diff);
-
-console.log(b_x);
-console.log(b_y);
+console.log('DISTANCE', EARTH_RADIUS * central_angle);
