@@ -1,0 +1,25 @@
+{
+  "name": "earth_midpoint",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./src/index.js",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rdkelley/earth_midpoint.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rdkelley/earth_midpoint/issues"
+  },
+  "homepage": "https://github.com/rdkelley/earth_midpoint#readme",
+  "devDependencies": {
+    "@eslint/js": "^9.3.0",
+    "eslint": "^9.3.0",
+    "globals": "^15.3.0"
+  }
+}
