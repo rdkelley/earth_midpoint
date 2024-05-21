@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node ./src/index.js",
+    "start:custom": "node ./src/index.js --",
     "test": "test"
   },
   "repository": {
