@@ -20,6 +20,7 @@ const convertRadiansToDegrees = (rad) => rad * (180 / Math.PI);
 const parseArgs = () => {
   const args = process.argv.slice(2);
   const values = {};
+  let using_demo_data = false;
 
   args.forEach((arg) => {
     const [key, value] = arg.split('=');
@@ -30,19 +31,39 @@ const parseArgs = () => {
     }
   });
 
+  if (values.n) {
+    values.n = parseInt(values.n);
+  } else {
+    values.n = null;
+  }
+
+  // If no long/lat values are specified, fill in
+  // some initial data (lat/long from Google Maps)
   if (
+    !values.latitude_a &&
+    !values.longitude_a &&
+    !values.latitude_b &&
+    !values.longitude_b
+  ) {
+    // Dodger Stadium
+    values.latitude_a = 34.074;
+    values.longitude_a = -118.2399;
+    // Fenway Park
+    values.latitude_b = 42.3469;
+    values.longitude_b = -71.097;
+
+    values.n = 6;
+
+    using_demo_data = true;
+  }
+  // If a custom data is entered, but not complete, throw error
+  else if (
     !values.latitude_a ||
     !values.longitude_a ||
     !values.latitude_b ||
     !values.longitude_b
   ) {
-    throw new Error('Too few latitude & longitude arguments');
-  }
-
-  if (values.n) {
-    values.n = parseInt(values.n);
-  } else {
-    values.n = null;
+    throw new Error('Too few latitude & longitude arguments for custom run');
   }
 
   values.latitude_a = parseFloat(values.latitude_a);
@@ -50,7 +71,15 @@ const parseArgs = () => {
   values.latitude_b = parseFloat(values.latitude_b);
   values.longitude_b = parseFloat(values.longitude_b);
 
-  console.log('\x1b[35m%s\x1b[0m', 'Data Entered:');
+  if (using_demo_data) {
+    console.log(
+      '\x1b[42m%s\x1b[0m',
+      'Using demo data: from Dodger Stadium to Fenway Park!'
+    );
+  } else {
+    console.log('\x1b[42m%s\x1b[0m', '\nData Entered:');
+  }
+
   console.log(
     `Location A (Lat/Long): (${values.latitude_a}, ${values.longitude_a})\nLocation B (Lat/Long): (${values.latitude_b}, ${values.longitude_b})`
   );
@@ -141,26 +170,38 @@ const interpolate = (n, ...calc_params) => {
   return f_steps.map((f) => calculateIntermediatePoint(f, ...calc_params));
 };
 
+/**
+ * Prints the results of the midpoint and intermediary points calculations.
+ *
+ * @param {number[]} mid_point - An array containing the midpoint. By now, it should be in degrees lat/long
+ * @param {number} n - The number of intermediary points needed.
+ * @param {number[][]} intr_points - An array of arrays, each containing the intermediary point.
+ *
+ */
 const printResults = (mid_point, n, intr_points) => {
   console.log(
-    '\x1b[35m%s\x1b[0m',
+    '\x1b[32m%s\x1b[0m',
     `The midpoint is located at ${mid_point[0].toFixed(
       4
-    )} latitude, ${mid_point[1].toFixed(4)} longitude.\n`
+    )}, ${mid_point[1].toFixed(4)}.\n`
   );
 
   if (n) {
     console.log(
-      '\x1b[35m%s\x1b[0m',
+      '\x1b[32m%s\x1b[0m',
       `${n} intermediary points were calculated:\n`
     );
 
     for (let i = 0; i < n; i++) {
       console.log(
-        '\x1b[35m%s\x1b[0m',
-        `${i + 1}: ${intr_points[i][0].toFixed(4)}, ${intr_points[i][1].toFixed(4)}`
+        '\x1b[32m%s\x1b[0m',
+        `${i + 1}: ${intr_points[i][0].toFixed(4)}, ${intr_points[i][1].toFixed(
+          4
+        )}`
       );
     }
+  } else {
+    console.log('No intermediary points were requested.');
   }
 };
 
@@ -213,5 +254,3 @@ const init = () => {
 };
 
 init();
-
-// console.log('\x1b[35m%s\x1b[0m');
