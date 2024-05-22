@@ -1,5 +1,3 @@
-const EARTH_RADIUS = 6371;
-
 const convertDegreesToRadians = (deg) => (deg * Math.PI) / 180;
 
 const convertRadiansToDegrees = (rad) => rad * (180 / Math.PI);
@@ -38,7 +36,8 @@ const parseArgs = () => {
   }
 
   // If no long/lat values are specified, fill in
-  // some initial data (lat/long from Google Maps)
+  // some initial data
+  // (lat/long from Google Maps -- Dodger Stadium & Fenway Park)
   if (
     !values.latitude_a &&
     !values.longitude_a &&
@@ -52,6 +51,7 @@ const parseArgs = () => {
     values.latitude_b = 42.3469;
     values.longitude_b = -71.097;
 
+    // Set it to 6 inter points
     values.n = 6;
 
     using_demo_data = true;
@@ -205,13 +205,24 @@ const printResults = (mid_point, n, intr_points) => {
   }
 };
 
+/**
+ * Where the magic happens. Initializes the program by parsing args, calculating the central angle,
+ * midpoint, and, if n is not null, intermediary points. Then it prints the results.
+ *
+ * This function performs the following steps:
+ * 1. Parses command-line arguments.
+ * 2. Converts latitude and longitude values from degrees to radians.
+ * 3. Calculates the central angle between the two locations.
+ * 4. Calculates the midpoint in Cartesian coordinates, converts it to lat/long in radians, then degrees.
+ * 5. If requested, calculates the intermediary points between the two locations and converts them to degrees.
+ * 6. Prints the results.
+ *
+ */
 const init = () => {
   const arg_values = parseArgs();
   let intr_points;
 
   const { n, ...location_values } = arg_values;
-
-  // Convert the values of location_values to radians
   const radian_location_values = {};
 
   Object.entries(location_values).forEach(([key, val]) => {
@@ -220,6 +231,8 @@ const init = () => {
 
   const central_angle = calculateCentralAngle(radian_location_values);
 
+  // Calls calculateIntermediatePoint directly, rather than through
+  // interpolate. Uses f=0.5 to find midpoint.
   const midpoint_coords = calculateIntermediatePoint(
     0.5,
     radian_location_values,
