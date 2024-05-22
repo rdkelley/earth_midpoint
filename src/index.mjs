@@ -50,8 +50,10 @@ const parseArgs = (args) => {
     values.latitude_b = 42.3469;
     values.longitude_b = -71.097;
 
-    // Set it to 6 inter points
-    values.n = 6;
+    // Set it to 6 inter points if n not set
+    if (!values.n) {
+      values.n = 6;
+    }
 
     using_demo_data = true;
   }
@@ -249,7 +251,6 @@ const validateCoordinates = ({
  *
  */
 export const computePoints = (args) => {
-  console.log(args);
   const arg_values = parseArgs(args);
   let intr_points;
 
@@ -305,7 +306,5 @@ export const computePoints = (args) => {
 };
 
 const result = computePoints(process.argv.slice(2));
-
-console.log(result);
 
 printResults({ ...result });
