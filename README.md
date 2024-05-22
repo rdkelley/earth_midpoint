@@ -4,7 +4,7 @@ Finds the midpoint between two locations on Earth, represented by latitude and l
 
 ### Running the Module
 
-The easiest way to run the module is type into the command line:
+The easiest way to run the module is clone this repository and from the project root directory:
 
 ```
 npm start
@@ -21,3 +21,15 @@ node ./src/index.mjs --latitude_a=33.91714 --longitude_a=-118.15370 --latitude_b
 ```
 
 Change locations and the value of `n` as you wish.
+
+### Testing
+
+There are minimal tests included to make sure the module can handle different locations, and that it throws an error if params are out of bounds or missing.
+
+Running tests will require Node version 20 or higher since `node:assert` is used. You should be able to run them on v18 also, as long as you add `--experimental-test` to the `"test"` script in `package.json`.
+
+To test:
+
+```
+npm test
+```

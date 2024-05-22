@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node ./src/index.mjs",
-    "start:custom": "node ./src/index.js --",
-    "test": "test"
+    "test": "node ./src/midpoint.test.mjs"
   },
   "repository": {
     "type": "git",

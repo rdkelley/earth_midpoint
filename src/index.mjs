@@ -15,15 +15,14 @@ const convertRadiansToDegrees = (rad) => rad * (180 / Math.PI);
  *
  * @throws {Error} Throws an error if any of the latitude or longitude arguments are missing.
  */
-const parseArgs = () => {
-  const args = process.argv.slice(2);
+const parseArgs = (args) => {
   const values = {};
   let using_demo_data = false;
 
   args.forEach((arg) => {
-    const [key, value] = arg.split('=');
+    const [key, value] = arg.split("=");
 
-    if (key.startsWith('--')) {
+    if (key.startsWith("--")) {
       const arg_name = key.slice(2);
       values[arg_name] = value;
     }
@@ -63,7 +62,7 @@ const parseArgs = () => {
     !values.latitude_b ||
     !values.longitude_b
   ) {
-    throw new Error('Too few latitude & longitude arguments for custom run');
+    throw new Error("Too few latitude & longitude arguments for custom run");
   }
 
   values.latitude_a = parseFloat(values.latitude_a);
@@ -73,11 +72,11 @@ const parseArgs = () => {
 
   if (using_demo_data) {
     console.log(
-      '\x1b[42m%s\x1b[0m',
-      'Using demo data: from Dodger Stadium to Fenway Park!'
+      "\x1b[42m%s\x1b[0m",
+      "Using demo data: from Dodger Stadium to Fenway Park!"
     );
   } else {
-    console.log('\x1b[42m%s\x1b[0m', '\nData Entered:');
+    console.log("\x1b[42m%s\x1b[0m", "\nData Entered:");
   }
 
   console.log(
@@ -85,14 +84,14 @@ const parseArgs = () => {
   );
   values.n
     ? console.log(`Find ${values.n} intermediary points.`)
-    : console.log('Intermediary (n) points not entered');
-  console.log('------------------------------------');
+    : console.log("Intermediary (n) points not entered");
+  console.log("------------------------------------");
 
   return values;
 };
 
 /**
- * Converts Cartesian coordinates to latitude and longitude in radians.
+ * Converts cartesian coordinates to latitude and longitude in radians.
  *
  * @param {number[]} coords - An array of Cartesian coords [x, y, z].
  * @returns {number[]} An array:
@@ -107,7 +106,7 @@ const coordsToLatLong = (coords) => {
 };
 
 /**
- * Calculates the Cartesian coords of an intermediate point represented by the fraction f
+ * Calculates the cartesian coords of an intermediate point represented by the fraction f
  *
  * @param {number} f - The fraction of the distance between the two points (0 <= f <= 1).
  * @param {Object} coords - An object containing the latitude and longitude of the two points.
@@ -178,9 +177,9 @@ const interpolate = (n, ...calc_params) => {
  * @param {number[][]} intr_points - An array of arrays, each containing the intermediary point.
  *
  */
-const printResults = (mid_point, n, intr_points) => {
+const printResults = ({ mid_point, n, intr_points }) => {
   console.log(
-    '\x1b[32m%s\x1b[0m',
+    "\x1b[32m%s\x1b[0m",
     `The midpoint is located at ${mid_point[0].toFixed(
       4
     )}, ${mid_point[1].toFixed(4)}.\n`
@@ -188,20 +187,51 @@ const printResults = (mid_point, n, intr_points) => {
 
   if (n) {
     console.log(
-      '\x1b[32m%s\x1b[0m',
+      "\x1b[32m%s\x1b[0m",
       `${n} intermediary points were calculated:\n`
     );
 
     for (let i = 0; i < n; i++) {
       console.log(
-        '\x1b[32m%s\x1b[0m',
+        "\x1b[32m%s\x1b[0m",
         `${i + 1}: ${intr_points[i][0].toFixed(4)}, ${intr_points[i][1].toFixed(
           4
         )}`
       );
     }
   } else {
-    console.log('No intermediary points were requested.');
+    console.log("No intermediary points were requested.");
+  }
+};
+
+const validateCoordinates = ({
+  latitude_a,
+  longitude_a,
+  latitude_b,
+  longitude_b,
+}) => {
+  const isLatitudeValid = (lat) => lat >= -90 && lat <= 90;
+  const isLongitudeValid = (lon) => lon >= -180 && lon <= 180;
+
+  if (!isLatitudeValid(latitude_a)) {
+    throw new Error(
+      `Invalid latitude_a: ${latitude_a}. It must be between -90 and 90.`
+    );
+  }
+  if (!isLongitudeValid(longitude_a)) {
+    throw new Error(
+      `Invalid longitude_a: ${longitude_a}. It must be between -180 and 180.`
+    );
+  }
+  if (!isLatitudeValid(latitude_b)) {
+    throw new Error(
+      `Invalid latitude_b: ${latitude_b}. It must be between -90 and 90.`
+    );
+  }
+  if (!isLongitudeValid(longitude_b)) {
+    throw new Error(
+      `Invalid longitude_b: ${longitude_b}. It must be between -180 and 180.`
+    );
   }
 };
 
@@ -218,11 +248,15 @@ const printResults = (mid_point, n, intr_points) => {
  * 6. Prints the results.
  *
  */
-const init = () => {
-  const arg_values = parseArgs();
+export const computePoints = (args) => {
+  console.log(args);
+  const arg_values = parseArgs(args);
   let intr_points;
 
   const { n, ...location_values } = arg_values;
+
+  validateCoordinates({ ...location_values });
+
   const radian_location_values = {};
 
   Object.entries(location_values).forEach(([key, val]) => {
@@ -263,7 +297,15 @@ const init = () => {
     );
   }
 
-  printResults(mid_point, n, intr_points);
+  return {
+    mid_point,
+    n,
+    intr_points,
+  };
 };
 
-init();
+const result = computePoints(process.argv.slice(2));
+
+console.log(result);
+
+printResults({ ...result });
