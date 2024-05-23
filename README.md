@@ -8,7 +8,7 @@ Finds the midpoint between two locations on Earth, represented by latitude and l
 
 Additional sources I used for implementation:
 
-- [Geometry on a Sphere](https://geophydog.cool/post/geometry_on_a_sphere/#__6-intersection-point-of-two-great-circle-paths-when-the-start-points-and-azimuths-are-given__)
+- [Geometry on a Sphere](https://geophydog.cool/post/geometry_on_a_sphere/)
 - [Why is Law of Cosines More Preferable than Haversine when Calculating Distance](https://gis.stackexchange.com/questions/4906/why-is-law-of-cosines-more-preferable-than-haversine-when-calculating-distance-b)
 - [Spherical Trigonometry](https://en.wikipedia.org/wiki/Spherical_trigonometry)
 - This site was used for reference and to compare results: [distance.to](https://www.distance.to/)
